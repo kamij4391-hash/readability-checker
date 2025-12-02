@@ -2,7 +2,7 @@ import streamlit as st
 from textstat import textstat
 
 # Streamlit App Title
-st.title(" English Passage Readability Checker")
+st.title("English Passage Readability Checker")
 
 # Input area
 st.subheader("Enter Your English Passage Below:")
@@ -38,32 +38,27 @@ if st.button("Check Readability"):
             level = "Very Difficult (College graduate)"
             color = "red"
 
+        # --- CEFR Level Estimation Based on Flesch Score ---
+        if flesch_score >= 90:
+            cefr = "A1 (Beginner)"
+        elif flesch_score >= 80:
+            cefr = "A2 (Elementary)"
+        elif flesch_score >= 65:
+            cefr = "B1 (Intermediate)"
+        elif flesch_score >= 50:
+            cefr = "B2 (Upper-Intermediate)"
+        elif flesch_score >= 30:
+            cefr = "C1 (Advanced)"
+        else:
+            cefr = "C2 (Proficient)"
+
         # Display results
         st.markdown(f"### Flesch Reading Ease Score: **{flesch_score:.2f}**")
         st.markdown(f"<h4 style='color:{color};'>Difficulty Level: {level}</h4>", unsafe_allow_html=True)
+        st.markdown(f"### CEFR Level: **{cefr}**")
 
-        # Analyze components
-        num_sentences = textstat.sentence_count(text)
-        num_words = textstat.lexicon_count(text, removepunct=True)
-        num_syllables = textstat.syllable_count(text)
-
-        avg_sentence_length = num_words / num_sentences if num_sentences > 0 else 0
-        avg_syllables_per_word = num_syllables / num_words if num_words > 0 else 0
-
-        st.markdown("###  Why this score?")
-        st.write(f"- **Average Sentence Length:** {avg_sentence_length:.2f} words per sentence")
-        st.write(f"- **Average Syllables per Word:** {avg_syllables_per_word:.2f} syllables per word")
-
-        # Explanation based on complexity
-        if flesch_score >= 80:
-            st.info(" Your passage uses **short sentences** and **simple words**, making it very easy to understand.")
-        elif flesch_score >= 60:
-            st.warning(" Your passage has **moderately long sentences** or **some complex words**, making it standard to read.")
-        else:
-            st.error(" Your passage contains **long sentences** and **many multi-syllable words**, making it difficult to read.")
-
-        # Interpretation scale
-        st.markdown("###  Interpretation Scale (Flesch Reading Ease)")
+        # Add interpretation scale
+        st.markdown("### Interpretation Scale (Flesch Reading Ease)")
         st.write("""
 | Score Range | Interpretation | Approx. Education Level |
 |--------------|----------------|--------------------------|
@@ -74,4 +69,17 @@ if st.button("Check Readability"):
 | 50–59 | Fairly Difficult | 10th–12th grade |
 | 30–49 | Difficult | College |
 | 0–29 | Very Difficult | College graduate |
+        """)
+
+        # CEFR Table
+        st.markdown("### CEFR Readability Scale")
+        st.write("""
+| CEFR Level | Description | Typical Reader |
+|------------|-------------|----------------|
+| A1 | Beginner | Basic English user |
+| A2 | Elementary | Simple communication |
+| B1 | Intermediate | Everyday language |
+| B2 | Upper-Intermediate | Professional/academic |
+| C1 | Advanced | Complex texts |
+| C2 | Proficient | Expert-level comprehension |
         """)
